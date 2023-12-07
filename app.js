@@ -15,7 +15,7 @@ const start = (() => {
   });
   fastify.register(fastifyCookie);
   fastify.register(fastifyAutoload, {
-    dir: path.join(__dirname, 'routes'),
+    dir: path.join(__dirname, 'controllers'),
     options: {
       prefix: process.env.APP_PREFIX || '/api',
     },

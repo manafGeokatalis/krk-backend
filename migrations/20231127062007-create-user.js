@@ -7,7 +7,7 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.BIGINT
       },
       uuid: {
         type: Sequelize.UUID
@@ -22,7 +22,18 @@ module.exports = {
         type: Sequelize.STRING
       },
       role: {
-        type: Sequelize.CHAR
+        type: Sequelize.CHAR(10),
+        comment: 'SUPERADMIN,ADMIN,PUBLIC',
+        defaultValue: 'PUBLIC'
+      },
+      id_number: {
+        type: Sequelize.STRING
+      },
+      wa_number: {
+        type: Sequelize.STRING
+      },
+      address: {
+        type: Sequelize.TEXT
       },
       email_verified_at: {
         type: Sequelize.DATE
