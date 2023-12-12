@@ -11,6 +11,9 @@ class UserServices {
 
       const _where = {
         where: {
+          id: {
+            [Op.ne]: request.user.id
+          },
           [Op.or]: [
             {
               name: {
