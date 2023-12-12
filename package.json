@@ -20,6 +20,7 @@
     "fastify": "^4.24.3",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "mailgen": "^2.0.28",
     "md5": "^2.3.0",
     "mime-types": "^2.1.35",
     "mysql2": "^3.6.5",

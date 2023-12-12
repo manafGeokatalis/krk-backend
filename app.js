@@ -2,6 +2,7 @@ const fastifyAutoload = require('@fastify/autoload');
 const fastifyCookie = require('@fastify/cookie');
 const fastifyCors = require('@fastify/cors');
 const path = require('path');
+const { errorResponse } = require('./utils/helpers');
 require('dotenv').config();
 
 

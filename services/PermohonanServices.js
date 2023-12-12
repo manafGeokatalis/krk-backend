@@ -67,6 +67,22 @@ class PermohonanServices {
       const count = await db.permohonan.count({
         ..._where,
         include: [
+          db.provinsi,
+          db.kabupaten,
+          db.kecamatan,
+          db.kelurahan,
+          {
+            model: db.provinsi,
+            as: 'lokasi_provinsi'
+          },
+          {
+            model: db.kabupaten,
+            as: 'lokasi_kabupaten'
+          },
+          {
+            model: db.kecamatan,
+            as: 'lokasi_kecamatan'
+          },
           {
             model: db.kelurahan,
             as: 'lokasi_kelurahan'
@@ -77,6 +93,22 @@ class PermohonanServices {
       const rows = await db.permohonan.findAll({
         ..._where,
         include: [
+          db.provinsi,
+          db.kabupaten,
+          db.kecamatan,
+          db.kelurahan,
+          {
+            model: db.provinsi,
+            as: 'lokasi_provinsi'
+          },
+          {
+            model: db.kabupaten,
+            as: 'lokasi_kabupaten'
+          },
+          {
+            model: db.kecamatan,
+            as: 'lokasi_kecamatan'
+          },
           {
             model: db.kelurahan,
             as: 'lokasi_kelurahan'
@@ -241,7 +273,11 @@ class PermohonanServices {
   }
 
   async destroy(id) {
-    const query = await db.permohonan.findByPk(id);
+    const query = await db.permohonan.findByPk(id, {
+      include: [
+        db.permohonan_progress
+      ]
+    });
     if (!query) {
       throw new Error('Data tidak ditemukan');
     }
@@ -254,6 +290,12 @@ class PermohonanServices {
     this.deleteFile(query.surat_perjanjian);
     this.deleteFile(query.rekom_ketinggian_bangunan);
     this.deleteFile(query.persetujuan_walikota);
+
+    for await (const progress of query.permohonan_progresses) {
+      this.deleteFile(progress.file);
+      await progress.destroy();
+    }
+
     return await query.destroy();
   }
 

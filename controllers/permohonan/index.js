@@ -202,4 +202,17 @@ module.exports = async function (fastify) {
     }
   });
 
+  fastify.delete('/:uuid', { preHandler: role(['superadmin', 'admin']) }, async function (request, reply) {
+    try {
+      const query = await PermohonanServices.getByUuid(request.params.uuid);
+      if (!query) {
+        return reply.status(404).send(errorResponse('Data tidak ditemukan'));
+      }
+      await PermohonanServices.destroy(query.id);
+      reply.send(successResponse('Permohonan berhasil dihapus'));
+    } catch (error) {
+      reply.status(500).send(errorResponse(error.message));
+    }
+  });
+
 }

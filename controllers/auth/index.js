@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { jwt_secret, cookieConfigs } = require("../../configs/auth");
 const auth = require("../../middleware/authMiddleware");
 const { compare } = require("bcrypt");
+const EmailServices = require("../../services/EmailServices");
 
 const errorLogin = (reply) => {
   reply.status(401).send(errorResponse('Data login tidak benar', 401));
@@ -71,13 +72,53 @@ module.exports = async function (fastify) {
     const userJson = save.toJSON();
     delete userJson.password;
 
+    await EmailServices.sendEmailVerification(save);
 
     reply.cookie('token', token, cookieConfigs).send(successResponse('Data berhasil disimpan', save));
   })
 
+  fastify.get('/verification-email', async function (request, reply) {
+    const token = request.query.token;
+    try {
+      const decode = jwt.verify(token, jwt_secret);
+      if (!decode) {
+        reply.status(403).send("Token tidak valid");
+      }
+      const checkEmail = await UserServices.getByEmail(decode.email);
+      if (!checkEmail) {
+        reply.status(403).send("Token tidak valid");
+      }
+
+      const email_verified_at = new Date();
+      await UserServices.update(checkEmail.id, { email_verified_at });
+
+      reply.redirect(process.env.APP_WEB_URL);
+    } catch (error) {
+      reply.status(403).send(errorResponse("Token tidak valid", 403));
+    }
+  })
+
+
+  fastify.post('/send-email-verification', { preHandler: auth }, async function (request, reply) {
+    try {
+      await EmailServices.sendEmailVerification(request.user);
+      return reply.send(successResponse('Email verifikasi berhasil dikirim'));
+    } catch (error) {
+      console.log(error);
+      reply.status(500).send(errorResponse(error.message, 500));
+    }
+  })
+
+
   fastify.get('/status', { preHandler: auth }, async function (request, reply) {
     const userJson = request.user.toJSON();
     delete userJson.password;
+    if (!userJson.email_verified_at) {
+      return reply.status(403).send(errorResponse({
+        status: 'email_not_verified',
+        user: userJson
+      }, 403));
+    }
     reply.send(successResponse('OK', request.user));
   })
 
