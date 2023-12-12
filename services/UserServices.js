@@ -14,6 +14,9 @@ class UserServices {
           id: {
             [Op.ne]: request.user.id
           },
+          email_verified_at: {
+            [Op.not]: NULL
+          },
           [Op.or]: [
             {
               name: {
