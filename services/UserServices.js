@@ -70,7 +70,8 @@ class UserServices {
           'role',
           'id_number',
           'wa_number',
-          'address'
+          'address',
+          'created_at'
         ],
         limit: perPage,
         offset: offset,
