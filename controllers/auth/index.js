@@ -81,4 +81,30 @@ module.exports = async function (fastify) {
     reply.send(successResponse('OK', request.user));
   })
 
+  fastify.post('/logout', { preHandler: auth }, async function (_request, reply) {
+    reply.clearCookie('token', cookieConfigs).send(successResponse('Logout berhasil'));
+  })
+
+  fastify.post('/profile', { preHandler: auth }, async function (request, reply) {
+    const data = request.body;
+    const user = request.user;
+    const checkEmail = await UserServices.checkEmailExist(user.id, data.email);
+    if (checkEmail) {
+      return reply.status(406).send(errorResponse(`Email ${data.email} sudah digunakan`, 406));
+    }
+    if (data.password !== data.confirm_password) {
+      return reply.status(406).send(errorResponse('Perulangan password tidak benar', 406));
+    }
+
+    delete data.confirm_password;
+    if (data.password == '') {
+      delete data.password;
+    }
+    const update = await UserServices.update(user.id, data);
+    const userJson = update.toJSON();
+    delete userJson.password;
+    reply.send(successResponse('Data berhasil disimpan', userJson));
+  })
+
+
 }

@@ -45,6 +45,9 @@ module.exports = {
       lokasi_kabupaten_id: {
         type: Sequelize.BIGINT
       },
+      lokasi_kecamatan_id: {
+        type: Sequelize.BIGINT
+      },
       lokasi_desa_id: {
         type: Sequelize.BIGINT
       },
@@ -89,6 +92,10 @@ module.exports = {
       },
       persetujuan_walikota: {
         type: Sequelize.STRING
+      },
+      registration_number: {
+        type: Sequelize.STRING,
+        unique: true
       },
       user_id: {
         type: Sequelize.BIGINT,
