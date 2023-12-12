@@ -62,6 +62,16 @@ class UserServices {
 
       const rows = await db.user.findAll({
         ..._where,
+        attributes: [
+          'id',
+          'uuid',
+          'name',
+          'email',
+          'role',
+          'id_number',
+          'wa_number',
+          'address'
+        ],
         limit: perPage,
         offset: offset,
         distinct: true,
