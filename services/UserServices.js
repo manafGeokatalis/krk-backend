@@ -71,7 +71,7 @@ class UserServices {
           'id_number',
           'wa_number',
           'address',
-          'created_at'
+          ['created_at', 'createdAt']
         ],
         limit: perPage,
         offset: offset,
