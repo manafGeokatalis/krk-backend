@@ -5,7 +5,7 @@ const { successResponse, errorResponse } = require("../../utils/helpers");
 
 
 module.exports = async function (fastify) {
-  fastify.addHook('preHandler', auth);
+  fastify.addHook('preHandler', auth());
   fastify.get('/provinsi', async function (_request, reply) {
     try {
       const data = await LocationServices.getProvinsi();

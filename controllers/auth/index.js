@@ -99,7 +99,7 @@ module.exports = async function (fastify) {
   })
 
 
-  fastify.post('/send-email-verification', { preHandler: auth }, async function (request, reply) {
+  fastify.post('/send-email-verification', { preHandler: auth(true) }, async function (request, reply) {
     try {
       await EmailServices.sendEmailVerification(request.user);
       return reply.send(successResponse('Email verifikasi berhasil dikirim'));
@@ -110,23 +110,17 @@ module.exports = async function (fastify) {
   })
 
 
-  fastify.get('/status', { preHandler: auth }, async function (request, reply) {
+  fastify.get('/status', { preHandler: auth() }, async function (request, reply) {
     const userJson = request.user.toJSON();
     delete userJson.password;
-    if (!userJson.email_verified_at) {
-      return reply.status(403).send(errorResponse({
-        status: 'email_not_verified',
-        user: userJson
-      }, 403));
-    }
     reply.send(successResponse('OK', request.user));
   })
 
-  fastify.post('/logout', { preHandler: auth }, async function (_request, reply) {
+  fastify.post('/logout', { preHandler: auth() }, async function (_request, reply) {
     reply.clearCookie('token', cookieConfigs).send(successResponse('Logout berhasil'));
   })
 
-  fastify.post('/profile', { preHandler: auth }, async function (request, reply) {
+  fastify.post('/profile', { preHandler: auth() }, async function (request, reply) {
     const data = request.body;
     const user = request.user;
     const checkEmail = await UserServices.checkEmailExist(user.id, data.email);

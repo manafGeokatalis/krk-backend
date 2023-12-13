@@ -6,7 +6,7 @@ const UserServices = require("../../services/UserServices");
 const { successResponse, errorResponse } = require("../../utils/helpers");
 
 module.exports = async function (fastify, opts, next) {
-  fastify.addHook('preHandler', auth);
+  fastify.addHook('preHandler', auth());
 
   fastify.get('/', { preHandler: role(['superadmin', 'admin']) }, async function (request, reply) {
     try {

@@ -10,7 +10,7 @@ const { error } = require('console');
 const role = require('../../middleware/roleMiddleware');
 
 module.exports = async function (fastify) {
-  fastify.addHook('preHandler', auth)
+  fastify.addHook('preHandler', auth())
 
   fastify.register(fastifyMultipart, {
     limits: {
