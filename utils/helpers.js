@@ -41,3 +41,27 @@ module.exports.generateRandomChar = async (length = 10) => {
 
   return registrationNumber;
 }
+
+module.exports.isExpired = (specificDate, minutes) => {
+  // Get the current timestamp in milliseconds
+  const now = Date.now();
+
+  // Create a new Date object from the specific date
+  const datePlusMinutes = new Date(specificDate);
+
+  // Add the specified number of minutes to the date
+  datePlusMinutes.setMinutes(datePlusMinutes.getMinutes() + minutes);
+
+  // Get the timestamp of the date plus minutes
+  const datePlusMinutesTimestamp = datePlusMinutes.getTime();
+
+  // Return true if the date plus minutes is older than now, false otherwise
+  return datePlusMinutesTimestamp < now;
+}
+
+module.exports.isGreaterThan = (firstDate, secondDate) => {
+  const first = new Date(firstDate);
+  const second = new Date(secondDate);
+
+  return first.getTime() > second.getTime();
+}

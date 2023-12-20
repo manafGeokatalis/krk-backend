@@ -1,7 +1,7 @@
 'use strict'
 
 const UserServices = require("../../services/UserServices");
-const { errorResponse, successResponse, isEmail } = require("../../utils/helpers");
+const { errorResponse, successResponse, isEmail, isExpired } = require("../../utils/helpers");
 const jwt = require('jsonwebtoken');
 const { jwt_secret, cookieConfigs } = require("../../configs/auth");
 const auth = require("../../middleware/authMiddleware");
@@ -77,22 +77,26 @@ module.exports = async function (fastify) {
     reply.cookie('token', token, cookieConfigs).send(successResponse('Data berhasil disimpan', save));
   })
 
-  fastify.get('/verification-email', async function (request, reply) {
-    const token = request.query.token;
+  fastify.post('/verification-email', async function (request, reply) {
     try {
-      const decode = jwt.verify(token, jwt_secret);
+      const decode = jwt.verify(request.body.token, jwt_secret);
       if (!decode) {
-        reply.status(403).send("Token tidak valid");
+        return reply.status(403).send(errorResponse("Token tidak valid", 403));
       }
-      const checkEmail = await UserServices.getByEmail(decode.email);
-      if (!checkEmail) {
-        reply.status(403).send("Token tidak valid");
+
+      if (isExpired(decode.date, 24 * 60)) {
+        return reply.status(403).send(errorResponse("Token sudah kadaluarsa", 403));
+      }
+
+      const user = await UserServices.getByEmail(decode.email);
+      if (!user) {
+        return reply.status(403).send(errorResponse("Token tidak valid", 403));
       }
 
       const email_verified_at = new Date();
-      await UserServices.update(checkEmail.id, { email_verified_at });
+      await UserServices.update(user.id, { email_verified_at });
 
-      reply.redirect(process.env.APP_WEB_URL);
+      return reply.send(successResponse('Email berhasil diverifikasi'));
     } catch (error) {
       reply.status(403).send(errorResponse("Token tidak valid", 403));
     }
@@ -109,6 +113,45 @@ module.exports = async function (fastify) {
     }
   })
 
+  fastify.post('/forgot-password', async function (request, reply) {
+    try {
+      const user = await UserServices.getByEmail(request.body.email);
+      if (user) {
+        await EmailServices.sendEmailResetPassword(user);
+      }
+      return reply.send(successResponse('Link reset password berhasil dikirim'));
+    } catch (error) {
+      console.log(error);
+      reply.status(500).send(errorResponse(error.message, 500));
+    }
+  })
+
+  fastify.post('/reset-password', async function (request, reply) {
+    try {
+      if (request.body.password !== request.body.confirm_password) {
+        return reply.status(406).send(errorResponse("Perulangan password tidak benar", 406));
+      }
+      const decode = jwt.verify(request.body.token, jwt_secret);
+      if (!decode) {
+        return reply.status(403).send(errorResponse("Token tidak valid", 403));
+      }
+
+      if (isExpired(decode.date, 24 * 60)) {
+        return reply.status(403).send(errorResponse("Token sudah kadaluarsa", 403));
+      }
+
+      const user = await UserServices.getByEmail(decode.email);
+      if (!user) {
+        return reply.status(403).send(errorResponse("Token tidak valid", 403));
+      }
+
+      await UserServices.update(user.id, { password: request.body.password });
+
+      return reply.send(successResponse('Password berhasil direset'));
+    } catch (error) {
+      reply.status(403).send(errorResponse("Token tidak valid", 403));
+    }
+  })
 
   fastify.get('/status', { preHandler: auth() }, async function (request, reply) {
     const userJson = request.user.toJSON();
