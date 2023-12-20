@@ -45,7 +45,7 @@ module.exports.resetPassword = (name, link) => {
       name: name,
       intro: `Anda menerima email ini karena ingin mereset password di aplikasi ${process.env.APP_NAME}`,
       action: {
-        instructions: 'Silahkan tombol di bawah untuk mereset password Anda:',
+        instructions: 'Silahkan klik tombol di bawah untuk mereset password Anda:',
         button: {
           color: '#4b96cc',
           text: 'Reset Password',
