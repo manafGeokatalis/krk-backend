@@ -4,10 +4,8 @@ const StatusServices = require("../../services/StatusServices");
 const { successResponse, errorResponse } = require("../../utils/helpers");
 
 
-module.exports = async function (fastify, opts, next) {
-  fastify.addHook('preHandler', auth());
-
-  fastify.get('/map-token', async function (_request, reply) {
+module.exports = async function (fastify) {
+  fastify.get('/map-token', { preHandler: auth() }, async function (_request, reply) {
     reply.send(successResponse(null, { token: process.env.MAPBOX_TOKEN || null }));
   })
 
