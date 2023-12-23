@@ -3,6 +3,7 @@ const fastifyCookie = require('@fastify/cookie');
 const fastifyCors = require('@fastify/cors');
 const path = require('path');
 const { errorResponse } = require('./utils/helpers');
+const visitorCounter = require('./plugins/visitorCounter');
 require('dotenv').config();
 
 
@@ -15,6 +16,8 @@ const start = (() => {
     origin: process.env.SITE_ORIGIN?.split(',').map(e => e.trim()) || '*'
   });
   fastify.register(fastifyCookie);
+  fastify.register(visitorCounter);
+  fastify.decorateRequest('user', null);
   fastify.register(fastifyAutoload, {
     dir: path.join(__dirname, 'controllers'),
     options: {
