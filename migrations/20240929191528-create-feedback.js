@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.BIGINT,
         allowNull: false,
         references: {
-          model: 'Users', // Assuming there's a 'Users' table for FK constraint
+          model: 'users', // Assuming there's a 'Users' table for FK constraint
           key: 'id',
         },
         onDelete: 'CASCADE', // Optional: remove feedbacks when user is deleted
