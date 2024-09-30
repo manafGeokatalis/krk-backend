@@ -41,7 +41,8 @@ const start = (() => {
   })
 
   const port = process.env.APP_PORT || 8000;
-  fastify.listen({ port }, () => {
+  const host = '0.0.0.0';
+  fastify.listen({ port, host }, () => {
     console.log(`Server start on port: ${port}`);
   });
 });
