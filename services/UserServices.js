@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const db = require("../models");
 
 class UserServices {
@@ -6,6 +6,9 @@ class UserServices {
     const page = parseInt(request.query.page) || 1;
     const perPage = parseInt(request.query.perPage) || 10;
     const search = request.query.search || '';
+    const order = request.query.order || 'desc'; // Default order is 'desc'
+    const orderBy = request.query.orderBy || 'name'; // Default orderBy column is 'created_at'
+
     try {
       const offset = (page - 1) * perPage;
 
@@ -47,17 +50,16 @@ class UserServices {
         }
       };
 
-      if (request.user.role == 'ADMIN') {
-        _where.where = {
-          ..._where.where, ...{
-            [Op.or]: [
-              {
-                role: 'PUBLIC'
-              }
-            ]
-          }
-        };
-      }
+      // if (request.user.role == 'ADMIN') {
+      //   _where.where = {
+      //     ..._where.where,
+      //     [Op.or]: [
+      //       {
+      //         role: 'PUBLIC', // Only include 'PUBLIC' role for admins
+      //       },
+      //     ],
+      //   };
+      // }
 
       const count = await db.user.count({
         ..._where
@@ -79,9 +81,7 @@ class UserServices {
         limit: perPage,
         offset: offset,
         distinct: true,
-        order: [
-          ['created_at', 'desc'],
-        ]
+        order: [[orderBy, order]],
       });
 
       const totalPages = Math.ceil(count / perPage);
