@@ -13,7 +13,7 @@ const { createWriteStream } = require("fs");
 module.exports = async function (fastify) {
   fastify.get('/:filename', async function (request, reply) {
     const fileName = request.params.filename;
-    const filePath = path.resolve(`./uploads/${fileName}`);
+    const filePath = path.resolve(`./public/uploads/${fileName}`);
 
     reply.header('Content-Disposition', `attachment; filename=${encodeURIComponent(filePath)}`);
 
@@ -32,15 +32,15 @@ module.exports = async function (fastify) {
 
     const tempDir = path.join(os.tmpdir(), md5(`${new Date()}-${request.params.uuid}`));
     await mkdir(tempDir);
-    const ktp = query.ktp ? path.join('./uploads', query.ktp) : null;
-    const pbb = query.pbb ? path.join('./uploads', query.pbb) : null;
-    const surat_kuasa_mengurus = query.surat_kuasa_mengurus ? path.join('./uploads', query.surat_kuasa_mengurus) : null;
-    const sertifikat_tanah = query.sertifikat_tanah ? path.join('./uploads', query.sertifikat_tanah) : null;
-    const skpt = query.skpt ? path.join('./uploads', query.skpt) : null;
-    const suket_tidak_sengketa = query.suket_tidak_sengketa ? path.join('./uploads', query.suket_tidak_sengketa) : null;
-    const surat_perjanjian = query.surat_perjanjian ? path.join('./uploads', query.surat_perjanjian) : null;
-    const rekom_ketinggian_bangunan = query.rekom_ketinggian_bangunan ? path.join('./uploads', query.rekom_ketinggian_bangunan) : null;
-    const persetujuan_walikota = query.persetujuan_walikota ? path.join('./uploads', query.persetujuan_walikota) : null;
+    const ktp = query.ktp ? path.join('./public/uploads', query.ktp) : null;
+    const pbb = query.pbb ? path.join('./public/uploads', query.pbb) : null;
+    const surat_kuasa_mengurus = query.surat_kuasa_mengurus ? path.join('./public/uploads', query.surat_kuasa_mengurus) : null;
+    const sertifikat_tanah = query.sertifikat_tanah ? path.join('./public/uploads', query.sertifikat_tanah) : null;
+    const skpt = query.skpt ? path.join('./public/uploads', query.skpt) : null;
+    const suket_tidak_sengketa = query.suket_tidak_sengketa ? path.join('./public/uploads', query.suket_tidak_sengketa) : null;
+    const surat_perjanjian = query.surat_perjanjian ? path.join('./public/uploads', query.surat_perjanjian) : null;
+    const rekom_ketinggian_bangunan = query.rekom_ketinggian_bangunan ? path.join('./public/uploads', query.rekom_ketinggian_bangunan) : null;
+    const persetujuan_walikota = query.persetujuan_walikota ? path.join('./public/uploads', query.persetujuan_walikota) : null;
 
     if (ktp) {
       await copyFile(ktp, path.join(tempDir, 'ktp.pdf'));

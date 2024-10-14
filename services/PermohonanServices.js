@@ -300,8 +300,8 @@ class PermohonanServices {
   }
 
   async deleteFile(filename) {
-    if (existsSync(`./uploads/${filename}`)) {
-      unlink(`./uploads/${filename}`);
+    if (existsSync(`./public/uploads/${filename}`)) {
+      unlink(`./public/uploads/${filename}`);
     }
   }
 }

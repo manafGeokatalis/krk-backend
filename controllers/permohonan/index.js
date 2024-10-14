@@ -53,7 +53,7 @@ module.exports = async function (fastify) {
             return reply.code(400).send(errorResponse('Ukuran file maksimal 10MB', 400));
           });
           const filename = part.filename ? `${md5((new Date()) + part.filename)}.pdf` : null;
-          pump(part.file, fs.createWriteStream(`./uploads/${filename}`));
+          pump(part.file, fs.createWriteStream(`./public/uploads/${filename}`));
           fields[part.fieldname] = filename;
         } else {
           fields[part.fieldname] = part.value && part.value != 'null' ? part.value : null;
@@ -91,7 +91,7 @@ module.exports = async function (fastify) {
             return reply.code(400).send(errorResponse('Ukuran file maksimal 10MB', 400));
           });
           const filename = part.filename ? `${md5((new Date()) + part.filename)}.pdf` : null;
-          pump(part.file, fs.createWriteStream(`./uploads/${filename}`));
+          pump(part.file, fs.createWriteStream(`./public/uploads/${filename}`));
           fields[part.fieldname] = filename;
           PermohonanServices.deleteFile(query[part.fieldname]);
         } else {
@@ -127,7 +127,7 @@ module.exports = async function (fastify) {
             return reply.code(400).send(errorResponse('Ukuran file maksimal 10MB', 400));
           });
           filename = part.filename ? `${md5((new Date()) + part.filename)}.pdf` : null;
-          pump(part.file, fs.createWriteStream(`./uploads/${filename}`));
+          pump(part.file, fs.createWriteStream(`./public/uploads/${filename}`));
           const progressFile = query.permohonan_progresses.filter((obj) => obj.step == 9);
           if (progressFile.length > 0) {
             PermohonanServices.deleteFile(progressFile[0].file);
@@ -135,7 +135,9 @@ module.exports = async function (fastify) {
         }
       }
 
-      const insert = await PermohonanServices.updateStatusByStep(request.user.id, query.id, 9, { title: '9. Dokumen KRK telah terbit', file: filename });
+      const insert = await PermohonanServices.updateStatusByStep(request.user.id, query.id, 5, { title: 'Dokumen KRK telah terbit', file: filename });
+
+      // const insert = await PermohonanServices.updateStatusByStep(request.user.id, query.id, 9, { title: '9. Dokumen KRK telah terbit', file: filename });
 
       reply.send(successResponse('Data berhasil disimpan', insert));
     } catch (error) {

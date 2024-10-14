@@ -31,6 +31,9 @@ const start = (() => {
     prefix: '/',
   });
 
+
+
+
   fastify.setNotFoundHandler((request, reply) => {
     const url = request.raw.url
     if (url !== undefined && url.startsWith('/api/')) {
