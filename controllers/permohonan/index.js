@@ -6,6 +6,8 @@ const { errorResponse, successResponse } = require("../../utils/helpers");
 const pump = require('pump');
 const md5 = require('md5');
 const PermohonanServices = require('../../services/PermohonanServices');
+const EmailServices = require('../../services/EmailServices');
+
 const { error } = require('console');
 const role = require('../../middleware/roleMiddleware');
 
@@ -177,6 +179,17 @@ module.exports = async function (fastify) {
       }
 
       const insert = await PermohonanServices.updateStatusByStep(request.user.id, query.id, 11, { title: request.body.message });
+
+
+      const subject = 'Pemberitahuan - KRK Manggarai Barat'
+      const text = 'Permohonan KRK yang anda ajukan telah terhenti/ditolak oleh admin.'
+
+      const user = {
+        email: query.email,
+        name: query.name
+      }
+      //SEND UPDATE EMAIL
+      await EmailServices.sendEmailUpdateStatus(user, subject, text, query.registration_number)
 
       reply.send(successResponse('Data berhasil disimpan', insert));
     } catch (error) {

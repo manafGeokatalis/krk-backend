@@ -1,6 +1,8 @@
 const { jwt_secret } = require("../configs/auth");
 const { transporter, mailOptions } = require("../configs/mail");
 const { veriifyEmail, resetPassword } = require("../mailer/verifyEmail");
+const { updateStatus } = require("../mailer/updateStatus");
+
 const jwt = require('jsonwebtoken');
 
 class EmailServices {
@@ -22,6 +24,17 @@ class EmailServices {
       ...mailOptions,
       to: user.email,
       subject: 'Reset Password',
+      html: email
+    });
+  }
+
+  async sendEmailUpdateStatus(user, subject, text, registrationCode) {
+    const token = jwt.sign({ email: user.email, date: new Date() }, jwt_secret, { expiresIn: '1d' });
+    const email = updateStatus(user.name, text, registrationCode);
+    return transporter.sendMail({
+      ...mailOptions,
+      to: user.email,
+      subject: subject,
       html: email
     });
   }
