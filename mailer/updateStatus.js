@@ -15,7 +15,7 @@ module.exports.updateStatus = (name, text, registrationCode) => {
     const email = {
         body: {
             name: name,
-            intro: `Permohonan KRK yang anda ajukan telah terhenti/ditolak oleh admin.`,
+            intro: text,
             action: {
                 instructions: `Silahkan mengecek status permohonan Anda dengan kode registrasi: ${registrationCode}`,
                 button: {

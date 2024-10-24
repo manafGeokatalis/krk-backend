@@ -164,6 +164,23 @@ module.exports = async function (fastify) {
 
       const insert = await PermohonanServices.updateStatus(request.user.id, query.id, request.body);
 
+
+      const newData = await PermohonanServices.getByUuid(request.params.uuid);
+      const checkLastProgress = newData.permohonan_progresses[newData.permohonan_progresses.length - 1]
+
+      //SEND EMAIL KRK TERBIT
+      if (checkLastProgress.step == 5) {
+        const subject = 'KRK Terbit - KRK Manggarai Barat'
+        const text = 'Permohonan KRK yang anda ajukan telah SELESAI, silahkan mengecek status permohonan pada web KRK untuk mendownload dokumen KRK anda'
+
+        const user = {
+          email: query.email,
+          name: query.name
+        }
+        await EmailServices.sendEmailUpdateStatus(user, subject, text, query.registration_number)
+
+      }
+
       reply.send(successResponse('Status berhasil diupdate', insert));
     } catch (error) {
       console.log(error);
@@ -229,5 +246,29 @@ module.exports = async function (fastify) {
       reply.status(500).send(errorResponse(error.message));
     }
   });
+
+  fastify.get('/send-cek-lapangan/:uuid', async function (request, reply) {
+    try {
+      const query = await PermohonanServices.getByUuid(request.params.uuid);
+      if (request.user.role == 'PUBLIC' && request.user.id != query.user_id) {
+        reply.status(404).send(error('Data tidak ditemukan', 404));
+      }
+
+      const subject = 'Tahap Lapangan - KRK Manggarai Barat'
+      const text = 'Permohonan KRK yang anda ajukan telah masuk ke tahap CEK LAPANGAN, silahkan menghubungi pihak admin KRK Kabupaten Manggarai Barat '
+
+      const user = {
+        email: query.email,
+        name: query.name
+      }
+
+      await EmailServices.sendEmailUpdateStatus(user, subject, text, query.registration_number)
+
+
+      reply.send(successResponse(null, query));
+    } catch (error) {
+      reply.status(500).send(errorResponse(error.message));
+    }
+  })
 
 }
