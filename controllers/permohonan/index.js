@@ -188,6 +188,27 @@ module.exports = async function (fastify) {
     }
   })
 
+  fastify.post('/update-status-bulk', { preHandler: role(['superadmin', 'admin']) }, async function (request, reply) {
+    try {
+
+      const ids = request.body.id
+      const status = request.body.status
+
+      for (const id of ids) {
+
+
+        // Await the status update for each ID
+        await PermohonanServices.updateStatus(request.user.id, id, status);
+      }
+
+      reply.send(successResponse('Permohonan Berhasil di update'));
+
+    } catch (error) {
+      console.log(error);
+      reply.code(500).send(errorResponse(error.message));
+    }
+  })
+
   fastify.put('/:uuid/reject', { preHandler: role(['superadmin', 'admin']) }, async function (request, reply) {
     try {
       const query = await PermohonanServices.getByUuid(request.params.uuid);
@@ -246,6 +267,15 @@ module.exports = async function (fastify) {
       reply.status(500).send(errorResponse(error.message));
     }
   });
+
+  fastify.post('/delete-permohonan-bulk', { preHandler: role(['superadmin', 'admin']) }, async function (request, reply) {
+    const ids = request.body.id
+    for (const id of ids) {
+      await PermohonanServices.destroy(id);
+    }
+
+    reply.send(successResponse('Permohonan Berhasil di delete'));
+  })
 
   fastify.get('/send-cek-lapangan/:uuid', async function (request, reply) {
     try {

@@ -206,6 +206,7 @@ class PermohonanServices {
 
   async updateStatus(staff_id, id, status) {
     const query = await db.permohonan.findByPk(id);
+    console.log(query, 'halo')
     if (!query) {
       throw new Error('Data tidak ditemukan');
     }
