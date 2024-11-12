@@ -45,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
     npwp: DataTypes.STRING,
     coordinate: DataTypes.STRING,
     luas_tanah: DataTypes.INTEGER,
+    status_tanah: DataTypes.STRING,
     fungsi_bangunan: DataTypes.STRING,
     ktp: DataTypes.STRING,
     pbb: DataTypes.STRING,

@@ -172,7 +172,27 @@ class PermohonanServices {
     return await db.permohonan.findOne({
       where: { uuid },
       include: [
+        db.provinsi,
+        db.kabupaten,
+        db.kecamatan,
+        db.kelurahan,
         db.permohonan_progress,
+        {
+          model: db.provinsi,
+          as: 'lokasi_provinsi'
+        },
+        {
+          model: db.kabupaten,
+          as: 'lokasi_kabupaten'
+        },
+        {
+          model: db.kecamatan,
+          as: 'lokasi_kecamatan'
+        },
+        {
+          model: db.kelurahan,
+          as: 'lokasi_kelurahan'
+        },
         {
           model: db.user,
           as: 'staff'
