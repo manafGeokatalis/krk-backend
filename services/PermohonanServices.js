@@ -9,6 +9,8 @@ class PermohonanServices {
     const page = parseInt(request.query.page) || 1;
     const perPage = parseInt(request.query.perPage) || 10;
     const search = request.query.search || '';
+    const order = request.query.order || 'desc';
+    const orderBy = request.query.orderBy || 'name';
     try {
       const offset = (page - 1) * perPage;
 
@@ -129,7 +131,7 @@ class PermohonanServices {
         distinct: true,
         group: ['permohonan.id'],
         order: [
-          ['created_at', 'desc'],
+          [orderBy, order],
         ]
       });
 

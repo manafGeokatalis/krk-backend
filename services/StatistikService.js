@@ -96,6 +96,128 @@ class StatistikService {
             throw new Error(error.message);
         }
     }
+
+    async getCountVisitThisMonth() {
+        try {
+            const query = `SELECT COUNT(*) AS total_this_month
+                            FROM pkkpr.visits p
+                            WHERE MONTH(p.createdAt) = MONTH(CURRENT_DATE())
+                            AND YEAR(p.createdAt) = YEAR(CURRENT_DATE())`
+
+            const [result] = await db.sequelize.query(query, {
+                type: db.Sequelize.QueryTypes.SELECT
+            })
+
+            return result.total_this_month
+
+
+        } catch (error) {
+            console.log(error)
+            throw new Error(error.message)
+        }
+    }
+
+    async getVisitorPerMonth(year) {
+        try {
+            const result = await db.sequelize.query(`SELECT 
+    COALESCE(MONTH(createdAt)-1, n.month) AS month,
+    COALESCE(COUNT(v.id), 0) AS total_visitors
+FROM (
+    SELECT 0 AS month UNION ALL
+    SELECT 1 UNION ALL
+    SELECT 2 UNION ALL
+    SELECT 3 UNION ALL
+    SELECT 4 UNION ALL
+    SELECT 5 UNION ALL
+    SELECT 6 UNION ALL
+    SELECT 7 UNION ALL
+    SELECT 8 UNION ALL
+    SELECT 9 UNION ALL
+    SELECT 10 UNION ALL
+    SELECT 11
+) n
+LEFT JOIN pkkpr.visits v
+    ON (MONTH(v.createdAt) - 1) = n.month
+   AND YEAR(v.createdAt) = ${year}
+GROUP BY n.month
+ORDER BY n.month`, {
+                type: db.Sequelize.QueryTypes.SELECT
+            })
+            console.log(result)
+            return result;
+        } catch (error) {
+            console.log(error)
+            alert(error)
+        }
+    }
+
+    async getNewUser(year) {
+        try {
+            const result = await db.sequelize.query(`SELECT 
+    COALESCE(MONTH(created_at)-1, n.month) AS month,
+    COALESCE(COUNT(u.id), 0) AS total_user
+FROM (
+    SELECT 0 AS month UNION ALL
+    SELECT 1 UNION ALL
+    SELECT 2 UNION ALL
+    SELECT 3 UNION ALL
+    SELECT 4 UNION ALL
+    SELECT 5 UNION ALL
+    SELECT 6 UNION ALL
+    SELECT 7 UNION ALL
+    SELECT 8 UNION ALL
+    SELECT 9 UNION ALL
+    SELECT 10 UNION ALL
+    SELECT 11
+) n
+LEFT JOIN pkkpr.users u
+    ON (MONTH(u.created_at) - 1) = n.month
+   AND YEAR(u.created_at) = ${year} AND role="PUBLIC"
+GROUP BY n.month
+ORDER BY n.month`, {
+                type: db.Sequelize.QueryTypes.SELECT
+            })
+            console.log(result)
+            return result;
+        } catch (error) {
+            console.log(error)
+            alert(error)
+        }
+    }
+
+    async getAvgFeedback(year) {
+        try {
+            const result = await db.sequelize.query(`SELECT 
+    COALESCE(MONTH(f.created_at)-1, n.month) AS month,
+    COALESCE(ROUND(AVG(f.rating),1), 0) AS average_feedback
+FROM (
+    SELECT 0 AS month UNION ALL
+    SELECT 1 UNION ALL
+    SELECT 2 UNION ALL
+    SELECT 3 UNION ALL
+    SELECT 4 UNION ALL
+    SELECT 5 UNION ALL
+    SELECT 6 UNION ALL
+    SELECT 7 UNION ALL
+    SELECT 8 UNION ALL
+    SELECT 9 UNION ALL
+    SELECT 10 UNION ALL
+    SELECT 11
+) n
+LEFT JOIN pkkpr.feedbacks f
+    ON (MONTH(f.created_at) - 1) = n.month
+   AND YEAR(f.created_at) = ${year} 
+GROUP BY n.month
+ORDER BY n.month`, {
+                type: db.Sequelize.QueryTypes.SELECT
+            })
+            console.log(result)
+            return result;
+        } catch (error) {
+            console.log(error)
+            alert(error)
+        }
+    }
 }
 
 module.exports = new StatistikService;

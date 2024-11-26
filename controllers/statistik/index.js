@@ -16,9 +16,11 @@ module.exports = async function (fastify) {
         try {
             const permohonanProgressCount = await StatistikService.getPermohonanProgressCounts()
             const feedbackCount = await StatistikService.getTotalFeedbackCount()
+            const countVisitor = await StatistikService.getCountVisitThisMonth()
             const response = {
                 ...permohonanProgressCount,
-                feedback: feedbackCount
+                feedback: feedbackCount,
+                visitor_this_month: countVisitor
             }
             reply.send(successResponse(null, response));
 
@@ -43,6 +45,25 @@ module.exports = async function (fastify) {
         } catch (error) {
             reply.status(500).send(errorResponse(error.message));
         }
+    })
+
+    fastify.get('/list-visitor', async function (request, reply) {
+        const year = parseInt(request.query.year)
+
+
+        const getVisitorPerMonth = await StatistikService.getVisitorPerMonth(year)
+        const getNewUserPerMonth = await StatistikService.getNewUser(year)
+        const getAvgFeedback = await StatistikService.getAvgFeedback(year)
+
+        const res = MONTH.map((item, key) => ({
+            bulan: item,
+            total_visitors: getVisitorPerMonth[key].total_visitors,
+            total_user: getNewUserPerMonth[key].total_user,
+            avg_feedback: getAvgFeedback[key].average_feedback
+
+        }))
+
+        reply.send(successResponse(null, res));
     })
 
     fastify.get('/list-feedback', async function (request, reply) {
