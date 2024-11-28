@@ -218,6 +218,40 @@ ORDER BY n.month`, {
             alert(error)
         }
     }
+
+    async getVisitorDevice() {
+        try {
+            const query = `SELECT 
+            user_agent,
+            CASE 
+                WHEN user_agent LIKE '%Macintosh%' THEN 'Mac'
+                WHEN user_agent LIKE '%Windows%' THEN 'Windows'
+                WHEN user_agent LIKE '%iPhone%' THEN 'iPhone'
+                WHEN user_agent LIKE '%Android%' THEN 'Android'
+                ELSE 'Other'
+            END AS device_type,
+            COUNT(*) AS count
+        FROM pkkpr.visits
+        GROUP BY device_type;`
+
+            const queryCount = `SELECT COUNT(*) as total FROM pkkpr.visits`
+
+            const result = await db.sequelize.query(query, {
+                type: db.Sequelize.QueryTypes.SELECT
+            })
+
+            const count = await db.sequelize.query(queryCount, {
+                type: db.Sequelize.QueryTypes.SELECT
+            })
+
+            return {
+                result,
+                count: count[0].total
+            };
+        } catch (error) {
+            alert(error)
+        }
+    }
 }
 
 module.exports = new StatistikService;

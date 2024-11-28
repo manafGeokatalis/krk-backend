@@ -159,7 +159,7 @@ module.exports = async function (fastify) {
     reply.send(successResponse('OK', request.user));
   })
 
-  fastify.post('/logout', { preHandler: auth() }, async function (_request, reply) {
+  fastify.post('/logout', async function (_request, reply) {
     reply.clearCookie('token', cookieConfigs).send(successResponse('Logout berhasil'));
   })
 

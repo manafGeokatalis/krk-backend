@@ -65,3 +65,37 @@ module.exports.isGreaterThan = (firstDate, secondDate) => {
 
   return first.getTime() > second.getTime();
 }
+
+module.exports.sortingPermohonan = (order, orderBy, data) => {
+  if (!['asc', 'desc'].includes(order)) {
+    throw new Error("Invalid order. Use 'ASC' or 'DESC'.");
+  }
+
+  if (!['name', 'created_at', 'step'].includes(orderBy)) {
+    throw new Error("Invalid orderBy. Use 'name', 'created_at', or 'step'.");
+  }
+
+  const compareFn = (a, b) => {
+    let valA, valB;
+
+    if (orderBy === 'name') {
+      valA = a.name || ''; // Ensure we handle null or undefined names
+      valB = b.name || '';
+    } else if (orderBy === 'created_at') {
+      valA = new Date(a.createdAt);
+      valB = new Date(b.createdAt);
+    } else if (orderBy === 'step') {
+      const lastStepA = a.permohonan_progresses[a.permohonan_progresses.length - 1]?.step || 0;
+      const lastStepB = b.permohonan_progresses[b.permohonan_progresses.length - 1]?.step || 0;
+      valA = lastStepA;
+      valB = lastStepB;
+    }
+
+    if (valA < valB) return order === 'asc' ? -1 : 1;
+    if (valA > valB) return order === 'desc' ? 1 : -1;
+    return 0;
+  };
+  return data.sort(compareFn);
+
+
+}

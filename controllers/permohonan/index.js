@@ -2,7 +2,7 @@
 const fs = require('fs');
 const fastifyMultipart = require("@fastify/multipart")
 const auth = require("../../middleware/authMiddleware")
-const { errorResponse, successResponse } = require("../../utils/helpers");
+const { errorResponse, successResponse, sortingPermohonan } = require("../../utils/helpers");
 const pump = require('pump');
 const md5 = require('md5');
 const PermohonanServices = require('../../services/PermohonanServices');
@@ -22,8 +22,16 @@ module.exports = async function (fastify) {
 
   fastify.get('/', async function (request, reply) {
     try {
-      const query = await PermohonanServices.getData(request);
-      reply.send(successResponse(null, query));
+      const response = await PermohonanServices.getData(request);
+
+      const order = request.query.order || 'desc';
+      const orderBy = request.query.orderBy || 'name';
+
+      const data = sortingPermohonan(order, orderBy, response.data)
+      reply.send(successResponse(null, {
+        data: data,
+        pagination: response.pagination
+      }));
     } catch (error) {
       reply.status(500).send(errorResponse(error.message));
     }

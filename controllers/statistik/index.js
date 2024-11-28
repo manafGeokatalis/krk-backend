@@ -72,7 +72,6 @@ module.exports = async function (fastify) {
             const perPage = parseInt(request.query.perPage) || 10;
             const order = request.query.order || 'desc';
             const orderBy = request.query.orderBy || 'created_at';
-            console.log(orderBy, 'order')
             const response = await StatistikService.getListFeedback(page, perPage, order, orderBy)
 
 
@@ -80,6 +79,23 @@ module.exports = async function (fastify) {
 
         } catch (error) {
             reply.status(500).send(errorResponse(error.message));
+        }
+    })
+
+    fastify.get('/get-visitor-device', async function (request, reply) {
+        try {
+            const response = await StatistikService.getVisitorDevice()
+
+            const data = response.result.map((item) => ({
+                value: item.count,
+                label: item.device_type,
+                user_agent: item.user_agent,
+                percent: (item.count / response.count) * 100
+            }))
+            reply.send(successResponse(null, data));
+
+        } catch (error) {
+            reply.status(500).send(errorResponse(error.message))
         }
     })
 }
