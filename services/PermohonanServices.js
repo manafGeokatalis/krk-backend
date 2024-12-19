@@ -122,11 +122,12 @@ class PermohonanServices {
             model: db.permohonan_progress,
             order: [
               ['step', 'asc']
-            ]
+            ],
+            limit: 10,
+            offset: 0,
           }
         ],
-        // limit: perPage,
-        // offset: offset,
+
         distinct: true,
         group: ['permohonan.id'],
         order: [
@@ -150,6 +151,7 @@ class PermohonanServices {
       throw new Error(error.message);
     }
   }
+
 
   async store(user_id, data) {
     const registration_number = await generateRandomChar(11);

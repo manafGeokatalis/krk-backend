@@ -6,7 +6,7 @@ const db = require('../models/index');
 module.exports = {
   async up(queryInterface, Sequelize) {
     try {
-      const dir = './seeders//wilayah';
+      const dir = './seeders/wilayah';
       const provinsiFile = await readFile(`${dir}/provinsi.json`, 'utf-8');
       const provinsiData = JSON.parse(provinsiFile);
       for (const provinsi of provinsiData) {
@@ -43,7 +43,7 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error.message);
+      console.log(error.message, 'halo');
     }
   },
 

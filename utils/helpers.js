@@ -67,6 +67,7 @@ module.exports.isGreaterThan = (firstDate, secondDate) => {
 }
 
 module.exports.sortingPermohonan = (order, orderBy, data) => {
+  console.log(data, 'halo')
   if (!['asc', 'desc'].includes(order)) {
     throw new Error("Invalid order. Use 'ASC' or 'DESC'.");
   }
@@ -85,17 +86,50 @@ module.exports.sortingPermohonan = (order, orderBy, data) => {
       valA = new Date(a.createdAt);
       valB = new Date(b.createdAt);
     } else if (orderBy === 'step') {
-      const lastStepA = a.permohonan_progresses[a.permohonan_progresses.length - 1]?.step || 0;
-      const lastStepB = b.permohonan_progresses[b.permohonan_progresses.length - 1]?.step || 0;
-      valA = lastStepA;
-      valB = lastStepB;
+      // const lastProgressA = a.permohonan_progresses[a.permohonan_progresses.length - 1];
+      // const lastProgressB = b.permohonan_progresses[b.permohonan_progresses.length - 1];
+
+
+      // // Handle the case where permohonan_progresses is empty or missing
+      // const lastStepA = lastProgressA ? lastProgressA.step : 0;
+      // const lastStepB = lastProgressB ? lastProgressB.step : 0;
+      // console.log(lastStepA)
+      // console.log(lastStepB)
+      // valA = lastStepA;
+      // valB = lastStepB;
+      valA = a.last_step || 0;  // Using the pre-calculated last_step value
+      valB = b.last_step || 0;
+      if (order == 'asc') {
+        return a.last_step - b.last_step
+
+      } else {
+        return b.last_step - a.last_step
+
+      }
     }
 
     if (valA < valB) return order === 'asc' ? -1 : 1;
     if (valA > valB) return order === 'desc' ? 1 : -1;
-    return 0;
+    // return 0;
   };
   return data.sort(compareFn);
 
 
+}
+
+module.exports.removeCircularReferences = (obj) => {
+  const seen = new Set();
+
+  return JSON.parse(
+    JSON.stringify(obj, (key, value) => {
+      // If the object has already been seen, skip it to prevent circular reference
+      if (value !== null && typeof value === 'object') {
+        if (seen.has(value)) {
+          return undefined; // Return undefined to remove the circular reference
+        }
+        seen.add(value);
+      }
+      return value;
+    })
+  );
 }

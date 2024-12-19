@@ -3,7 +3,11 @@ const db = require("../models");
 
 class VisitService {
     async createVisit(payload) {
-        return await db.Visit.create(payload);
+        try {
+            return await db.Visit.create(payload);
+        } catch (e) {
+            console.log(e, 'halo')
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 'use strict'
 
 const VisitService = require("../../services/VisitService");
-
+const { successResponse, errorResponse } = require("../../utils/helpers");
 module.exports = async function (fastify) {
     fastify.post('/', async function (request, reply) {
         const { page, timestamp } = request.body;
@@ -14,6 +14,8 @@ module.exports = async function (fastify) {
             user_agent: userAgent
         }
         const storeVisit = await VisitService.createVisit(payload)
+
+        reply.send(successResponse(null, { 'message': 'success' }));
     })
 
 }

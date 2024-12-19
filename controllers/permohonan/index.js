@@ -2,7 +2,7 @@
 const fs = require('fs');
 const fastifyMultipart = require("@fastify/multipart")
 const auth = require("../../middleware/authMiddleware")
-const { errorResponse, successResponse, sortingPermohonan } = require("../../utils/helpers");
+const { errorResponse, successResponse, sortingPermohonan, removeCircularReferences } = require("../../utils/helpers");
 const pump = require('pump');
 const md5 = require('md5');
 const PermohonanServices = require('../../services/PermohonanServices');
@@ -27,7 +27,25 @@ module.exports = async function (fastify) {
       const order = request.query.order || 'desc';
       const orderBy = request.query.orderBy || 'name';
 
-      const data = sortingPermohonan(order, orderBy, response.data)
+      const convertData = response.data.map((item) => {
+        const safeItem = removeCircularReferences(item);
+
+        const lastProgress = item.permohonan_progresses && item.permohonan_progresses.length > 0
+          ? item.permohonan_progresses[item.permohonan_progresses.length - 1]
+          : null;
+
+        // Set last_step to 0 if no progress is found
+        const lastStep = lastProgress ? lastProgress.step : 0;
+        return {
+          ...safeItem,
+          last_step: lastStep
+        }
+      })
+
+      const data = sortingPermohonan(order, orderBy, convertData)
+
+      // const mappingData = data.map((item) => item.permohonan_progresses[item.permohonan_progresses.length - 1]?.step)
+
       reply.send(successResponse(null, {
         data: data,
         pagination: response.pagination

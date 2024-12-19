@@ -9,7 +9,6 @@ const StatistikService = require('../../services/StatistikService')
 const { errorResponse, successResponse } = require("../../utils/helpers");
 
 module.exports = async function (fastify) {
-    fastify.addHook('preHandler', auth());
 
 
     fastify.get('/summary', async function (request, reply) {
