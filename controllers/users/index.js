@@ -40,11 +40,11 @@ module.exports = async function (fastify, opts, next) {
     if (data.password == '') {
       return reply.status(406).send(errorResponse('Password tidak boleh kosong', 406));
     }
-    if (data.password !== data.confirm_password) {
-      return reply.status(406).send(errorResponse('Perulangan password tidak benar', 406));
-    }
+    // if (data.password !== data.confirm_password) {
+    //   return reply.status(406).send(errorResponse('Perulangan password tidak benar', 406));
+    // }
 
-    delete data.confirm_password;
+    // delete data.confirm_password;
     const update = await UserServices.store(data);
     const userJson = update.toJSON();
     delete userJson.password;
