@@ -9,6 +9,7 @@ class PermohonanServices {
     const page = parseInt(request.query.page) || 1;
     const perPage = parseInt(request.query.perPage) || 10;
     const search = request.query.search || '';
+
     try {
       const offset = (page - 1) * perPage;
 
@@ -121,11 +122,12 @@ class PermohonanServices {
             model: db.permohonan_progress,
             order: [
               ['step', 'asc']
-            ]
+            ],
+            limit: 10,
+            offset: 0,
           }
         ],
-        limit: perPage,
-        offset: offset,
+
         distinct: true,
         group: ['permohonan.id'],
         order: [
@@ -150,6 +152,7 @@ class PermohonanServices {
     }
   }
 
+
   async store(user_id, data) {
     const registration_number = await generateRandomChar(11);
     return await db.permohonan.create({
@@ -172,7 +175,27 @@ class PermohonanServices {
     return await db.permohonan.findOne({
       where: { uuid },
       include: [
+        db.provinsi,
+        db.kabupaten,
+        db.kecamatan,
+        db.kelurahan,
         db.permohonan_progress,
+        {
+          model: db.provinsi,
+          as: 'lokasi_provinsi'
+        },
+        {
+          model: db.kabupaten,
+          as: 'lokasi_kabupaten'
+        },
+        {
+          model: db.kecamatan,
+          as: 'lokasi_kecamatan'
+        },
+        {
+          model: db.kelurahan,
+          as: 'lokasi_kelurahan'
+        },
         {
           model: db.user,
           as: 'staff'
@@ -300,8 +323,8 @@ class PermohonanServices {
   }
 
   async deleteFile(filename) {
-    if (existsSync(`./uploads/${filename}`)) {
-      unlink(`./uploads/${filename}`);
+    if (existsSync(`./public/uploads/${filename}`)) {
+      unlink(`./public/uploads/${filename}`);
     }
   }
 }

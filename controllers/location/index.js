@@ -39,4 +39,14 @@ module.exports = async function (fastify) {
     }
   })
 
+  fastify.get('/kelurahan/getByKabupaten/:kabupaten_id', async function (request, reply) {
+    try {
+
+      const data = await LocationServices.getKelurahanByKabupaten(request.params.kabupaten_id);
+      reply.send(successResponse(null, data));
+    } catch (error) {
+      reply.status(500).send(errorResponse(error.message))
+    }
+  })
+
 }
